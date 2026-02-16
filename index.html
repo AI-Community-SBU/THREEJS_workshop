@@ -4,14 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Three.js CDN Test</title>
-    <style>
+    <!-- <style>
         body { margin: 0; overflow: hidden; background-color: #000; }
         canvas { display: block; }
-    </style>
+    </style> -->
+    <link rel="stylesheet" href="index.css"></link>
 </head>
-<body>
 
-    <!-- 1. Import Map: Tells the browser where to find 'three' -->
+<body>
+    <nav class ="navbar">
+        <ul>
+            <li class="navbar right"> home </li>
+            <li class="navbar left"> link 1</li>
+            <li class="navbar left"> link1 </li>
+        </ul>
+    </nav>
+
     <script type="importmap">
         {
             "imports": {
@@ -21,55 +29,14 @@
         }
     </script>
 
-    <script type="module">
-        import * as THREE from 'three';
-        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    <div class = "canvas-wrapper">
+        <div id = "canvas-container"></div>
+        <div class="canvas-overlay">
+            <h1> Hi, I'm ___</h1>
+        </div>
+    </div>
 
-        // --- 2. Setup Scene, Camera, and Renderer ---
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.z = 5;
-
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        document.body.appendChild(renderer.domElement);
-
-        // --- 3. Add OrbitControls (allows you to drag/zoom) ---
-        const controls = new OrbitControls(camera, renderer.domElement);
-
-        // --- 4. Create a Rotating Cube ---
-        const geometry = new THREE.BoxGeometry(1, 1, 1);
-        const material = new THREE.MeshStandardMaterial({ color: 0x00ff88 });
-        const cube = new THREE.Mesh(geometry, material);
-        scene.add(cube);
-
-        // --- 5. Add Lighting ---
-        const light = new THREE.DirectionalLight(0xffffff, 1);
-        light.position.set(1, 1, 2).normalize();
-        scene.add(light);
-        scene.add(new THREE.AmbientLight(0x404040)); // Soft white light
-
-        // --- 6. Handle Window Resize ---
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-
-        // --- 7. Animation Loop ---
-        function animate() {
-            requestAnimationFrame(animate);
-
-            // Rotate the cube
-            cube.rotation.x += 0.01;
-            cube.rotation.y += 0.01;
-
-            controls.update(); // Only required if controls.enableDamping = true
-            renderer.render(scene, camera);
-        }
-
-        animate();
-        console.log("Three.js is running! Version:", THREE.REVISION);
-    </script>
+    <script type="module" src="canvas.js"></script>
 </body>
+
 </html>

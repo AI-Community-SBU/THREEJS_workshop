@@ -1,0 +1,52 @@
+body { 
+    margin: 0; 
+    overflow: hidden;
+    background-color: #a03; }
+    
+canvas { 
+    display: block; 
+}
+
+.canvas-wrapper{
+    position: relative;
+    /* display: block; */
+}
+
+.canvas-overlay{
+    width: 100%;
+    height: 500px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    z-index: 2;
+    pointer-events: none; 
+}
+
+.canvas-overlay h1 {
+    font-size: x-large;
+    color: #fff;
+}
+
+#canvas-container{
+    position: absolute;
+    /* position: relative; */
+    top: 0;
+    left: 0;
+    width: 100%;
+    /* height: 100vh; */
+    height: 500px;
+    z-index: 1; /* Background layer */
+    /* display: block; */
+
+}
+
+.navbar ul {
+    list-style-type: none;
+    margin: 0;
+
+}
+
+/* .navbar.left{
+    
+} */
