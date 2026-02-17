@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 
+
 // 1.Setup Scene, Camera, and Renderer 
 // retrieve the element where the render will be drawn
 const container = document.getElementById('canvas-container');
@@ -19,6 +20,13 @@ const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(width, height);
 container.appendChild(renderer.domElement); // creates the rendering on the attached component
 
+//1.5 Handle Window Resize
+window.addEventListener('resize', () => {
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+    renderer.setSize(width, height);
+});
+
 
 
 
@@ -33,6 +41,7 @@ const tetraMaterial = new THREE.MeshPhongMaterial({ color: 0x7D8CC4, shininess:1
 const numCubes = 150
 const numTetra = 200
 
+// create a random 3D vector for positions and rotational axes
 function GetRandomVector3(xmin, xmax, ymin, ymax, zmin, zmax){
     return new THREE.Vector3(
         Math.random() * (xmax - xmin + 1) + xmin,
@@ -51,7 +60,7 @@ const tetras = [];
 // create bounds for the random positions that the objects can start from
 const zmin = -6;
 const zmax = 4
-const xymin = -15 //x and y share 
+const xymin = -15 //x and y share the same bounds
 const xymax = 15
 
 for (let i = 0; i < numCubes; i++){
@@ -75,10 +84,20 @@ for (let i = 0; i < numTetra; i++){
     axesTetras.push(GetRandomVector3(-1,1,-1,1,-1,1).normalize())
 }
 
+// 2.5 Adding Lighting
+//add a directional light, coming from behind and our top right
+const light = new THREE.DirectionalLight(0xffffff, 1);
+light.position.set(1, 1, 2).normalize();
+scene.add(light);
+
+//create and add an ambient light, similar to the sun's lighting
+const ambientLight = new THREE.AmbientLight(0xCFCFCF)
+scene.add(ambientLight); 
 
 
 
-// 4. Physics update rule
+
+// 3. Physics update rule
 function PhysicsUpdate(){
     //Cube updates
     // rotate the cubes
@@ -111,35 +130,12 @@ function PhysicsUpdate(){
 
 
 
-// 5.Adding Lighting
-//add a directional light, coming from behind and our top right
-const light = new THREE.DirectionalLight(0xffffff, 1);
-light.position.set(1, 1, 2).normalize();
-scene.add(light);
-
-//create and add an ambient light, similar to the sun's lighting
-const ambientLight = new THREE.AmbientLight(0xCFCFCF)
-scene.add(ambientLight); 
-
-
-
-
-//6. Handle Window Resize
-window.addEventListener('resize', () => {
-    camera.aspect = width / height;
-    camera.updateProjectionMatrix();
-    renderer.setSize(width, height);
-});
-
-
-
-
-//7. Animation Loop 
+//4. Animation Loop 
 function animate() {
     requestAnimationFrame(animate);
     PhysicsUpdate()
     renderer.render(scene, camera);
 }
-
 animate();
+
 console.log("Three.js is running!");
