@@ -1,6 +1,4 @@
 import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-
 
 // 1.Setup Scene, Camera, and Renderer 
 // retrieve the element where the render will be drawn
@@ -16,10 +14,10 @@ scene.background = new THREE.Color(0xA9BCD0) // ambient sky coloring
 const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
 camera.position.z = 6; // move the camera away from the origin (z points out of the screen)
 
-// create a renderer. Acts a layer of abstraction between the THREEJS componen
+// create a renderer. Acts a layer of abstraction between the THREEJS component
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(width, height);
-container.appendChild(renderer.domElement); // Append to the DIV, not the BODY
+container.appendChild(renderer.domElement); // creates the rendering on the attached component
 
 
 
@@ -32,42 +30,49 @@ const cubeMaterial = new THREE.MeshPhongMaterial({ color: 0xFE5F55, shininess:15
 const tetraGeometry = new THREE.TetrahedronGeometry(0.3)
 const tetraMaterial = new THREE.MeshPhongMaterial({ color: 0x7D8CC4, shininess:150 });
 
-const numCubes = 50
-const numTetra = 75
-// creating random Vector3s so that cubes can have random position and spin
-function GetRandomVector3(){
-    const min = -5
-    const max = 5
+const numCubes = 150
+const numTetra = 200
+
+function GetRandomVector3(xmin, xmax, ymin, ymax, zmin, zmax){
     return new THREE.Vector3(
-        Math.random() * (max - min + 1) + min,
-        Math.random() * (max - min + 1) + min,
-        Math.random() * (max - min + 1) + min
+        Math.random() * (xmax - xmin + 1) + xmin,
+        Math.random() * (ymax - ymin + 1) + ymin,
+        Math.random() * (zmax - zmin + 1) + zmin
     )
 }
 
-// instantiating the meshes, and storing their angular velocities (omega)
-// cube[i] will get its angular velocity from omegaCubes[i]
-const omegaCubes = []
-const omegaTetras = []
+// instantiating the meshes, and storing their axes of rotation
+// cube[i] will get its rotational axis from axesCubes[i]
+const axesCubes = []
+const axesTetras = []
 const cubes = [];
 const tetras = [];
+
+// create bounds for the random positions that the objects can start from
+const zmin = -6;
+const zmax = 4
+const xymin = -15 //x and y share 
+const xymax = 15
+
 for (let i = 0; i < numCubes; i++){
     //creating cubes
     const newCube = new THREE.Mesh(cubeGeometry, cubeMaterial);//creates a new cube with the geometry and material
-    newCube.position.copy(GetRandomVector3())
+    newCube.position.copy(GetRandomVector3(xymin,xymax,xymin,xymax,zmin,zmax))
     cubes.push(newCube)
     scene.add(newCube)
     
-    omegaCubes.push(GetRandomVector3().multiplyScalar(0.001))
+    //create a random axis for the cubes to rotate around
+    axesCubes.push(GetRandomVector3(-1,1,-1,1,-1,1).normalize())
 }
 
 for (let i = 0; i < numTetra; i++){
     const newTetra = new THREE.Mesh(tetraGeometry, tetraMaterial);//creates a new tetrahedron with the geometry and material
-    newTetra.position.copy(GetRandomVector3())
+    newTetra.position.copy(GetRandomVector3(xymin,xymax,xymin,xymax,zmin,zmax))
     tetras.push(newTetra)
     scene.add(newTetra)
-    
-    omegaTetras.push(GetRandomVector3().multiplyScalar(0.005))
+
+    //create a random axis for the tetrahedra to rotate around
+    axesTetras.push(GetRandomVector3(-1,1,-1,1,-1,1).normalize())
 }
 
 
@@ -75,30 +80,31 @@ for (let i = 0; i < numTetra; i++){
 
 // 4. Physics update rule
 function PhysicsUpdate(){
+    //Cube updates
     // rotate the cubes
     for(let i = 0; i < numCubes; i++){
-        cubes[i].rotation.x += omegaCubes[i].x;
-        cubes[i].rotation.y += omegaCubes[i].y;
-        cubes[i].rotation.z += omegaCubes[i].z;
+        cubes[i].rotateOnWorldAxis(axesCubes[i], 0.02)
     }
 
     // translate the cubes
     for(let i = 0; i < numCubes; i++){
-        cubes[i].position.y += 0.005
-        cubes[i].position.y = (cubes[i].position.y + 5) % 10 - 5
+        cubes[i].position.y += 0.008
+        cubes[i].position.y = ((cubes[i].position.y - xymin) % (xymax-xymin)) + xymin
     }
+    console.log(cubes[0].position.y)
 
+
+
+    //Tetrahedron updates
     // rotate the tetrahedra
     for(let i = 0; i < numTetra; i++){
-        tetras[i].rotation.x += omegaTetras[i].x;
-        tetras[i].rotation.y += omegaTetras[i].y;
-        tetras[i].rotation.z += omegaTetras[i].z;
+        tetras[i].rotateOnWorldAxis(axesTetras[i], 0.04)
     }
 
     // translate the tetrahedra
     for(let i = 0; i < numTetra; i++){
-        tetras[i].position.y += 0.01
-        tetras[i].position.y = (tetras[i].position.y + 5) % 10 - 5
+        tetras[i].position.y += 0.012
+        tetras[i].position.y = ((tetras[i].position.y - xymin) % (xymax-xymin)) + xymin
     }
 }
 
@@ -132,10 +138,8 @@ window.addEventListener('resize', () => {
 function animate() {
     requestAnimationFrame(animate);
     PhysicsUpdate()
-
-    // controls.update(); // Only required if controls.enableDamping = true
     renderer.render(scene, camera);
 }
 
 animate();
-console.log("Three.js is running! Version:", THREE.REVISION);
+console.log("Three.js is running!");

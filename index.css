@@ -29,10 +29,20 @@ body {
     pointer-events: none; 
 }
 
-.canvas-overlay h1 {
-    font-size: x-large;
+.canvas-overlay {
     color: #fff;
 }
+
+.canvas-overlay h1 {
+    /* font-size: x-large; */
+    font-size: 120px;
+    margin: 0;
+}
+
+.canvas-overlay h3{
+    margin: 0;
+}
+
 
 #canvas-container{
     position: absolute;

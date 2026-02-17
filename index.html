@@ -8,6 +8,7 @@
 </head>
 
 <body>
+    <!-- Import THREEJS -->
     <script type="importmap">
         {
             "imports": {
@@ -17,6 +18,7 @@
         }
     </script>
 
+    <!-- Navbar -->
     <nav class ="navbar">
         <a href = "/"> Home </a>
         <ul>
@@ -25,18 +27,24 @@
         </ul>
     </nav>
 
+    <!-- Canvas and rendering -->
     <div class = "canvas-wrapper">
         <div id = "canvas-container"></div>
         <div class="canvas-overlay">
-            <h1> Hi, I'm ___</h1>
+            <div class="name">
+                <h3> Hi, I'm</h3>
+                <H1> John Doe</H1>
+            </div>
         </div>
     </div>
 
+    <!-- About -->
     <div class="about">
         <h2> About Me </h2>
         <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Doloribus sunt consequuntur quisquam expedita, placeat reprehenderit deleniti. Eligendi, ea reiciendis et esse totam rem, ad quasi libero repudiandae provident sequi sint!</p>
     </div>
 
+    <!-- Scene Code Import -->
     <script type="module" src="canvas.js"></script>
 </body>
 
