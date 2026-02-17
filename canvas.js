@@ -2,31 +2,39 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 
-// --- 2. Setup Scene, Camera, and Renderer ---
+// 1.Setup Scene, Camera, and Renderer 
+// retrieve the element where the render will be drawn
 const container = document.getElementById('canvas-container');
-
 const width = container.clientWidth;
 const height = container.clientHeight;
-// console.log(width,height)
 
+// create the scene. 3D models, lights, and cameras will be used here
 const scene = new THREE.Scene();
-// const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
-camera.position.z = 5;
+scene.background = new THREE.Color(0xA9BCD0) // ambient sky coloring
 
+// create a perspective camera
+const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+camera.position.z = 6; // move the camera away from the origin (z points out of the screen)
+
+// create a renderer. Acts a layer of abstraction between the THREEJS componen
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(width, height);
 container.appendChild(renderer.domElement); // Append to the DIV, not the BODY
 
-// --- 4. Create a Rotating Cube ---
-const geometry = new THREE.BoxGeometry(1, 1, 1);
-const material = new THREE.MeshStandardMaterial({ color: 0x00ff88 });
-const cube = new THREE.Mesh(geometry, material);
-scene.add(cube);
 
-// Creating the scene
-const numElements = 10
-//      Creating random Vector3s
+
+
+// 2.Creating the scene objects
+// creating a 3D objects for our scene. Here, I'm using tetrahedra and cubes
+const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
+const cubeMaterial = new THREE.MeshPhongMaterial({ color: 0xFE5F55, shininess:150 });
+
+const tetraGeometry = new THREE.TetrahedronGeometry(0.3)
+const tetraMaterial = new THREE.MeshPhongMaterial({ color: 0x7D8CC4, shininess:150 });
+
+const numCubes = 50
+const numTetra = 75
+// creating random Vector3s so that cubes can have random position and spin
 function GetRandomVector3(){
     const min = -5
     const max = 5
@@ -37,55 +45,92 @@ function GetRandomVector3(){
     )
 }
 
-//      Creating random cubes
-const angularVelocities = []
+// instantiating the meshes, and storing their angular velocities (omega)
+// cube[i] will get its angular velocity from omegaCubes[i]
+const omegaCubes = []
+const omegaTetras = []
 const cubes = [];
-for (let i = 0; i < numElements; i++){
-    const newCube = new THREE.Mesh(geometry, material);
+const tetras = [];
+for (let i = 0; i < numCubes; i++){
+    //creating cubes
+    const newCube = new THREE.Mesh(cubeGeometry, cubeMaterial);//creates a new cube with the geometry and material
     newCube.position.copy(GetRandomVector3())
     cubes.push(newCube)
     scene.add(newCube)
     
-    angularVelocities.push(GetRandomVector3().multiplyScalar(0.001))
+    omegaCubes.push(GetRandomVector3().multiplyScalar(0.001))
 }
 
-//      Physics update rule
+for (let i = 0; i < numTetra; i++){
+    const newTetra = new THREE.Mesh(tetraGeometry, tetraMaterial);//creates a new tetrahedron with the geometry and material
+    newTetra.position.copy(GetRandomVector3())
+    tetras.push(newTetra)
+    scene.add(newTetra)
+    
+    omegaTetras.push(GetRandomVector3().multiplyScalar(0.005))
+}
+
+
+
+
+// 4. Physics update rule
 function PhysicsUpdate(){
     // rotate the cubes
-    for(let i = 0; i < numElements; i++){
-        cubes[i].rotation.x += angularVelocities[i].x;
-        cubes[i].rotation.y += angularVelocities[i].y;
-        cubes[i].rotation.z += angularVelocities[i].z;
+    for(let i = 0; i < numCubes; i++){
+        cubes[i].rotation.x += omegaCubes[i].x;
+        cubes[i].rotation.y += omegaCubes[i].y;
+        cubes[i].rotation.z += omegaCubes[i].z;
     }
 
     // translate the cubes
-    for(let i = 0; i < numElements; i++){
-        cubes[i].position.y += 0.02
-        
+    for(let i = 0; i < numCubes; i++){
+        cubes[i].position.y += 0.005
+        cubes[i].position.y = (cubes[i].position.y + 5) % 10 - 5
+    }
+
+    // rotate the tetrahedra
+    for(let i = 0; i < numTetra; i++){
+        tetras[i].rotation.x += omegaTetras[i].x;
+        tetras[i].rotation.y += omegaTetras[i].y;
+        tetras[i].rotation.z += omegaTetras[i].z;
+    }
+
+    // translate the tetrahedra
+    for(let i = 0; i < numTetra; i++){
+        tetras[i].position.y += 0.01
+        tetras[i].position.y = (tetras[i].position.y + 5) % 10 - 5
     }
 }
 
-// --- 5. Add Lighting ---
+
+
+
+// 5.Adding Lighting
+//add a directional light, coming from behind and our top right
 const light = new THREE.DirectionalLight(0xffffff, 1);
 light.position.set(1, 1, 2).normalize();
 scene.add(light);
-scene.add(new THREE.AmbientLight(0x404040)); // Soft white light
 
-// --- 6. Handle Window Resize ---
+//create and add an ambient light, similar to the sun's lighting
+const ambientLight = new THREE.AmbientLight(0xCFCFCF)
+scene.add(ambientLight); 
+
+
+
+
+//6. Handle Window Resize
 window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.aspect = width / height;
     camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(width, height);
 });
 
-// --- 7. Animation Loop ---
+
+
+
+//7. Animation Loop 
 function animate() {
     requestAnimationFrame(animate);
-
-    // Rotate the cube
-    cube.rotation.x += 0.01;
-    cube.rotation.y += 0.01;
-
     PhysicsUpdate()
 
     // controls.update(); // Only required if controls.enableDamping = true

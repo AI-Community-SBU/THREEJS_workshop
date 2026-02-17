@@ -1,20 +1,26 @@
+@import url('https://fonts.googleapis.com');
+
+:root {
+    --canvas-size: 500px;
+}
+
 body { 
     margin: 0; 
-    overflow: hidden;
-    background-color: #a03; }
-    
-canvas { 
-    display: block; 
+    /* overflow: hidden; */
+    background-color: #2A2D43; 
+    font-family: 'Geist', sans-serif;
+    -webkit-font-smoothing: antialiased; /* Optional: Makes modern fonts look crisper */
+    -moz-osx-font-smoothing: grayscale;
 }
 
 .canvas-wrapper{
     position: relative;
-    /* display: block; */
+    height: var(--canvas-size);
 }
 
 .canvas-overlay{
     width: 100%;
-    height: 500px;
+    height: var(--canvas-size);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -30,23 +36,41 @@ canvas {
 
 #canvas-container{
     position: absolute;
-    /* position: relative; */
     top: 0;
     left: 0;
     width: 100%;
-    /* height: 100vh; */
-    height: 500px;
-    z-index: 1; /* Background layer */
-    /* display: block; */
+    height: var(--canvas-size);
+    z-index: 1; 
+}
 
+.navbar{
+    padding-left: 12px;
+    padding-right: 12px;
+    margin: 12px 120px 12px 120px;
+
+    background: #BEE7E8;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    font-weight: bolder;
 }
 
 .navbar ul {
     list-style-type: none;
-    margin: 0;
-
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
 }
 
-/* .navbar.left{
-    
-} */
+.navbar a{
+    color:inherit;
+    text-decoration: none;
+}
+
+.about{
+    padding-left: 120px;
+    padding-right: 120px;
+    color: #fff;
+}

@@ -3,23 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Three.js CDN Test</title>
-    <!-- <style>
-        body { margin: 0; overflow: hidden; background-color: #000; }
-        canvas { display: block; }
-    </style> -->
+    <title>THREEJS workshop</title>
     <link rel="stylesheet" href="index.css"></link>
 </head>
 
 <body>
-    <nav class ="navbar">
-        <ul>
-            <li class="navbar right"> home </li>
-            <li class="navbar left"> link 1</li>
-            <li class="navbar left"> link1 </li>
-        </ul>
-    </nav>
-
     <script type="importmap">
         {
             "imports": {
@@ -29,11 +17,24 @@
         }
     </script>
 
+    <nav class ="navbar">
+        <a href = "/"> Home </a>
+        <ul>
+            <li> <a href = "https://www3.cs.stonybrook.edu/~wics/pages/events.html"> HopperHacks '26 </a></li>
+            <li> <a href = "https://ai-community-sbu.github.io/AI-SBU/"> AI Community </a> </li>
+        </ul>
+    </nav>
+
     <div class = "canvas-wrapper">
         <div id = "canvas-container"></div>
         <div class="canvas-overlay">
             <h1> Hi, I'm ___</h1>
         </div>
+    </div>
+
+    <div class="about">
+        <h2> About Me </h2>
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Doloribus sunt consequuntur quisquam expedita, placeat reprehenderit deleniti. Eligendi, ea reiciendis et esse totam rem, ad quasi libero repudiandae provident sequi sint!</p>
     </div>
 
     <script type="module" src="canvas.js"></script>
